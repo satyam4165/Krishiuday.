@@ -1,0 +1,510 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CropYield Predictor - AI-Driven Farming Insights</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f8fafc;
+        }
+        .hero {
+            background: linear-gradient(to right, #10b981, #34d399);
+        }
+        .dashboard {
+            background-color: #e5e7eb;
+        }
+        .education {
+            background-color: #fefce8;
+        }
+        @keyframes glow {
+            0% { box-shadow: 0 0 5px #10b981; }
+            50% { box-shadow: 0 0 20px #10b981; }
+            100% { box-shadow: 0 0 5px #10b981; }
+        }
+        .calculate-btn:hover {
+            animation: glow 1s infinite;
+        }
+        .result-card {
+            transition: all 0.3s ease;
+        }
+        .result-card:hover {
+            transform: translateY(-5px);
+        }
+        .nav-link {
+            cursor: pointer;
+        }
+        .nav-link.active {
+            background-color: #10b981;
+            color: white;
+        }
+        .module-toggle {
+            cursor: pointer;
+        }
+        .module-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.5s ease;
+        }
+        .module-content.open {
+            max-height: 1000px; /* Adjust as needed */
+        }
+    </style>
+</head>
+<body>
+    <nav class="bg-gray-800 text-white p-4">
+        <div class="container mx-auto flex justify-between items-center">
+            <h1 class="text-xl font-bold">Krishiuday</h1>
+            <ul class="flex space-x-4" id="nav-menu">
+                <li class="nav-link px-3 py-2 rounded active" data-section="home">Home</li>
+                <li class="nav-link px-3 py-2 rounded" data-section="dashboard">Dashboard</li>
+                <li class="nav-link px-3 py-2 rounded" data-section="education">Education</li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Home Section -->
+    <section id="home" class="section">
+        <header class="hero text-white py-8 px-4">
+            <div class="container mx-auto text-center">
+                <h1 class="text-4xl font-bold mb-4">Krishiuday</h1>
+                <p class="text-lg mb-6">Harness AI for accurate crop yield predictions, weather integration, and personalized farming recommendations to boost productivity by up to 15%.</p>
+                <div class="mb-6">
+                    <img src="https://storage.googleapis.com/workspace-0f70711f-8b4e-4d94-86f1-2a93ccde5887/image/4206780e-af6c-4d44-b521-c94147d2b07c.png" alt="Vast green agricultural field under a clear blue sky with sunlight highlighting rows of healthy crops and distant irrigation systems, evoking sustainable farming and productivity" class="max-w-full h-auto mx-auto rounded-lg shadow-lg" onerror="this.style.display='none';" />
+                </div>
+            </div>
+        </header>
+
+        <main class="container mx-auto px-4 py-8">
+            <section id="input-section" class="bg-white p-6 rounded-lg shadow-lg mb-8">
+                <h2 class="text-2xl font-semibold mb-6 text-gray-800">Input Your Farming Data</h2>
+                <form id="predictionForm" class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2" for="crop">Crop Type:</label>
+                        <select id="crop" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 required">
+                            <option value="">Select Crop</option>
+                            <option value="wheat">Wheat</option>
+                            <option value="rice">Rice</option>
+                            <option value="maize">Maize</option>
+                            <option value="soybean">Soybean</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2" for="location">Location:</label>
+                        <input type="text" id="location" placeholder="e.g., Punjab, India" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 required">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2" for="soilPh">Soil pH:</label>
+                        <input type="number" id="soilPh" step="0.1" min="0" max="14" placeholder="e.g., 6.5" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 required">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2" for="soilMoisture">Soil Moisture (%):</label>
+                        <input type="number" id="soilMoisture" min="0" max="100" placeholder="e.g., 45" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 required">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2" for="temperature">Avg Temperature (°C):</label>
+                        <input type="number" id="temperature" step="0.1" placeholder="e.g., 25.5" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 required">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2" for="rainfall">Rainfall (mm/month):</label>
+                        <input type="number" id="rainfall" placeholder="e.g., 120" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 required">
+                    </div>
+                </form>
+                <div class="text-center mt-6">
+                    <button id="calculateBtn" class="bg-green-600 text-white px-6 py-3 rounded-lg font-semibold calculate-btn hover:bg-green-700 transition">Predict Yield & Get Recommendations</button>
+                </div>
+                <div id="loading" class="text-center mt-4 hidden">
+                    <div class="inline-block w-8 h-8 border-4 border-green-500 border-t-transparent rounded-full animate-spin"></div>
+                    <p class="ml-2 text-gray-600">Analyzing data with AI...</p>
+                </div>
+            </section>
+
+            <section id="results-section" class="bg-white p-6 rounded-lg shadow-lg hidden">
+                <h2 class="text-2xl font-semibold mb-6 text-gray-800">Your AI-Driven Predictions & Recommendations</h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="result-card bg-green-50 p-4 rounded-lg border-l-4 border-green-500">
+                        <img src="https://storage.googleapis.com/workspace-0f70711f-8b4e-4d94-86f1-2a93ccde5887/image/89437e9c-331a-4a8b-b211-734260b925d1.png" alt="Bar graph showing predicted crop yields in tons per hectare across different months, with rising trend lines indicating growth under optimized conditions" class="w-full h-32 object-cover mb-4 rounded" onerror="this.style.display='none';" />
+                        <h3 class="text-lg font-medium text-green-800 mb-2">Predicted Yield</h3>
+                        <p id="predictedYield" class="text-gray-700"></p>
+                    </div>
+                    <div class="result-card bg-blue-50 p-4 rounded-lg border-l-4 border-blue-500">
+                        <img src="https://storage.googleapis.com/workspace-0f70711f-8b4e-4d94-86f1-2a93ccde5887/image/eeedfaa0-d354-4b4b-90cc-4d5849c0cba1.png" alt="Illustrated farmer in field with icons for water, fertilizer bags, and pest control spray, representing tailored agricultural recommendations" class="w-full h-32 object-cover mb-4 rounded" onerror="this.style.display='none';" />
+                        <h3 class="text-lg font-medium text-blue-800 mb-2">Recommendations</h3>
+                        <ul id="recommendations" class="text-gray-700 list-disc list-inside"></ul>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </section>
+
+    <!-- Dashboard Section -->
+    <section id="dashboard" class="section hidden">
+        <header class="dashboard py-8 px-4">
+            <div class="container mx-auto">
+                <h1 class="text-4xl font-bold text-center text-gray-800 mb-4">Farm Dashboard</h1>
+                <p class="text-lg text-center mb-6 text-gray-600">Monitor your farm's performance, view historical insights, and track improvements with AI analytics.</p>
+            </div>
+        </header>
+
+        <main class="container mx-auto px-4 py-8">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+                <div class="bg-white p-4 rounded-lg shadow-lg text-center result-card">
+                    <img src="https://storage.googleapis.com/workspace-0f70711f-8b4e-4d94-86f1-2a93ccde5887/image/9b18d27f-483b-490a-b7ce-20ed93fc8cac.png" alt="Gauge meter showing overall farm health score, with green indicator for excellent conditions, needle pointing to optimal zone including soil quality, yield trends, and weather factors" class="w-full h-32 object-cover mb-4 rounded" onerror="this.style.display='none';" />
+                    <h3 class="text-xl font-semibold text-gray-800 mb-2">Farm Health Score</h3>
+                    <p id="farmHealthScore" class="text-2xl font-bold text-green-600">85%</p>
+                    <p class="text-gray-600">Based on recent inputs and predictions.</p>
+                </div>
+                <div class="bg-white p-4 rounded-lg shadow-lg text-center result-card">
+                    <img src="https://storage.googleapis.com/workspace-0f70711f-8b4e-4d94-86f1-2a93ccde5887/image/b5ca70f6-5c9f-4960-a971-d3f4ca531cb0.png" alt="Line chart illustrating crop yield trends over six months, with upward sloping line for positive growth in wheat and rice production" class="w-full h-32 object-cover mb-4 rounded" onerror="this.style.display='none';" />
+                    <h3 class="text-xl font-semibold text-gray-800 mb-2">Yield Trends</h3>
+                    <p id="yieldTrends" class="text-gray-700">Wheat: +12% | Rice: +8%</p>
+                    <p class="text-gray-600">Compared to last season.</p>
+                </div>
+                <div class="bg-white p-4 rounded-lg shadow-lg text-center result-card">
+                    <img src="https://storage.googleapis.com/workspace-0f70711f-8b4e-4d94-86f1-2a93ccde5887/image/cfa9c499-a997-48ef-a92f-96a5ce462b64.png" alt="Calendar icon with alert marker indicating upcoming action items for irrigation scheduling and fertilization dates based on regional weather forecasts" class="w-full h-32 object-cover mb-4 rounded" onerror="this.style.display='none';" />
+                    <h3 class="text-xl font-semibold text-gray-800 mb-2">Alerts & Reminders</h3>
+                    <p id="alertsReminders" class="text-gray-700">• Irrigate wheat fields in 2 days</p>
+                    <p class="text-gray-600">Stay on top of your schedule.</p>
+                </div>
+            </div>
+
+            <div class="bg-white p-6 rounded-lg shadow-lg">
+                <h2 class="text-2xl font-semibold mb-6 text-gray-800">Historical Insights</h2>
+                <div class="overflow-x-auto">
+                    <table id="historyTable" class="min-w-full text-left table-auto">
+                        <thead>
+                            <tr class="bg-gray-100">
+                                <th class="px-4 py-2 text-gray-700 font-semibold">Crop</th>
+                                <th class="px-4 py-2 text-gray-700 font-semibold">Location</th>
+                                <th class="px-4 py-2 text-gray-700 font-semibold">Date</th>
+                                <th class="px-4 py-2 text-gray-700 font-semibold">Predicted Yield</th>
+                                <th class="px-4 py-2 text-gray-700 font-semibold">Performance</th>
+                            </tr>
+                        </thead>
+                        <tbody id="historyBody">
+                            <!-- Rows will be populated by JS -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </main>
+    </section>
+
+    <!-- Education Section -->
+    <section id="education" class="section hidden">
+        <header class="education py-8 px-4">
+            <div class="container mx-auto">
+                <h1 class="text-4xl font-bold text-center text-gray-800 mb-4">Educational Modules</h1>
+                <p class="text-lg text-center mb-6 text-gray-600">Learn best practices for better crop production. Click on any module to expand and gain detailed insights.</p>
+            </div>
+        </header>
+
+        <main class="container mx-auto px-4 py-8">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="bg-white p-6 rounded-lg shadow-lg">
+                    <div class="module-toggle cursor-pointer flex items-center justify-between mb-4" data-module="soil-health">
+                        <h3 class="text-xl font-semibold text-gray-800">Soil Health Management</h3>
+                        <span class="text-gray-600">▶</span>
+                    </div>
+                    <div class="module-content">
+                        <img src="https://storage.googleapis.com/workspace-0f70711f-8b4e-4d94-86f1-2a93ccde5887/image/25493dc9-4a18-40b8-85e7-40a41ed171cf.png" alt="Cross-sectional view of healthy fertile soil layers with roots, worms, organic matter, and nutrient particles, illustrating excellent soil structure and microbial activity" class="w-full h-32 object-cover mb-4 rounded" onerror="this.style.display='none';" />
+                        <p class="text-gray-700 mb-4">Understanding and maintaining soil health is crucial for sustainable farming. Healthy soil promotes root growth, nutrient absorption, and disease resistance.</p>
+                        <ul class="list-disc list-inside text-gray-700">
+                            <li>Test soil pH regularly to ensure it's between 6 and 7 for most crops.</li>
+                            <li>Practice crop rotation to prevent nutrient depletion and soil erosion.</li>
+                            <li>Add organic matter like compost to improve soil structure and fertility.</li>
+                            <li>Avoid over-tilling to preserve soil microorganisms.</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="bg-white p-6 rounded-lg shadow-lg">
+                    <div class="module-toggle cursor-pointer flex items-center justify-between mb-4" data-module="plant-nutrition">
+                        <h3 class="text-xl font-semibold text-gray-800">Plant Nutrition Essentials</h3>
+                        <span class="text-gray-600">▶</span>
+                    </div>
+                    <div class="module-content">
+                        <img src="https://storage.googleapis.com/workspace-0f70711f-8b4e-4d94-86f1-2a93ccde5887/image/419a7cd8-4ec9-4dfe-a0bb-6fcb64034111.png" alt="Colorful plant with roots absorbing various nutrients like nitrogen, phosphorus, and potassium from the soil, depicted with arrows showing nutrient flow to leaves and fruits" class="w-full h-32 object-cover mb-4 rounded" onerror="this.style.display='none';" />
+                        <p class="text-gray-700 mb-4">Providing the right nutrients at the right times ensures optimal plant growth and higher yields.</p>
+                        <ul class="list-disc list-inside text-gray-700">
+                            <li>Use balanced NPK fertilizers based on soil tests.</li>
+                            <li>Apply nitrogen during vegetative growth phases.</li>
+                            <li>Ensure adequate micronutrients like magnesium and zinc.</li>
+                            <li>Consider foliar feeding for quick nutrient absorption.</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="bg-white p-6 rounded-lg shadow-lg">
+                    <div class="module-toggle cursor-pointer flex items-center justify-between mb-4" data-module="water-management">
+                        <h3 class="text-xl font-semibold text-gray-800">Efficient Water Management</h3>
+                        <span class="text-gray-600">▶</span>
+                    </div>
+                    <div class="module-content">
+                        <img src="https://storage.googleapis.com/workspace-0f70711f-8b4e-4d94-86f1-2a93ccde5887/image/fc232269-2abf-4693-9678-7812b9effb0e.png" alt="Irrigation system setup with drip lines, sprinklers, and water droplets nourishing crop roots, with sun and weather icons indicating efficient usage in various conditions" class="w-full h-32 object-cover mb-4 rounded" onerror="this.style.display='none';" />
+                        <p class="text-gray-700 mb-4">Water is a precious resource; managing it efficiently conserves it while maximizing crop productivity.</p>
+                        <ul class="list-disc list-inside text-gray-700">
+                            <li>Implement drip irrigation to reduce water wastage.</li>
+                            <li>Water deeply but less frequently to encourage deep roots.</li>
+                            <li>Monitor soil moisture levels regularly.</li>
+                            <li>Collect rainwater for supplemental irrigation.</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="bg-white p-6 rounded-lg shadow-lg">
+                    <div class="module-toggle cursor-pointer flex items-center justify-between mb-4" data-module="pest-disease">
+                        <h3 class="text-xl font-semibold text-gray-800">Pest and Disease Control</h3>
+                        <span class="text-gray-600">▶</span>
+                    </div>
+                    <div class="module-content">
+                        <img src="https://storage.googleapis.com/workspace-0f70711f-8b4e-4d94-86f1-2a93ccde5887/image/e70b8178-d58e-48e2-b69d-7b02129ba321.png" alt="Healthy plant surrounded by beneficial insects like ladybugs and bees fighting off harmful pests, with organic sprayers and protective netting in the background" class="w-full h-32 object-cover mb-4 rounded" onerror="this.style.display='none';" />
+                        <p class="text-gray-700 mb-4">Integrated pest management helps control pests while minimizing chemical use.</p>
+                        <ul class="list-disc list-inside text-gray-700">
+                            <li>Monitor fields regularly for early pest detection.</li>
+                            <li>Use beneficial insects to control pests naturally.</li>
+                            <li>Rotate crops to break pest cycles.</li>
+                            <li>Apply biopesticides when needed.</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="bg-white p-6 rounded-lg shadow-lg">
+                    <div class="module-toggle cursor-pointer flex items-center justify-between mb-4" data-module="sustainable-practices">
+                        <h3 class="text-xl font-semibold text-gray-800">Sustainable Farming Practices</h3>
+                        <span class="text-gray-600">▶</span>
+                    </div>
+                    <div class="module-content">
+                        <img src="https://storage.googleapis.com/workspace-0f70711f-8b4e-4d94-86f1-2a93ccde5887/image/3a6ee3ca-6a38-49d4-96de-73ccfedb0ed6.png" alt="Eco-friendly farm with solar panels, green practices like mulching, organic compost piles, and biodiverse plants promoting long-term soil health and environmental balance" class="w-full h-32 object-cover mb-4 rounded" onerror="this.style.display='none';" />
+                        <p class="text-gray-700 mb-4">Sustainable practices ensure long-term farm viability and environmental health.</p>
+                        <ul class="list-disc list-inside text-gray-700">
+                            <li>Adopt no-till farming to preserve soil structure.</li>
+                            <li>Use cover crops to prevent erosion and add nutrients.</li>
+                            <li>Reduce chemical inputs through organic alternatives.</li>
+                            <li>Participate in carbon sequestration programs.</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="bg-white p-6 rounded-lg shadow-lg">
+                    <div class="module-toggle cursor-pointer flex items-center justify-between mb-4" data-module="climate-adaptation">
+                        <h3 class="text-xl font-semibold text-gray-800">Climate-Smart Agriculture</h3>
+                        <span class="text-gray-600">▶</span>
+                    </div>
+                    <div class="module-content">
+                        <img src="https://storage.googleapis.com/workspace-0f70711f-8b4e-4d94-86f1-2a93ccde5887/image/28e1209b-d7d7-4c6a-91be-78a04cd3f19c.png" alt="Farm landscape adapting to climate changes with drought-resistant crops, shade nets, windbreaks, and adaptive equipment under varying weather symbols like sun, rain, and clouds" class="w-full h-32 object-cover mb-4 rounded" onerror="this.style.display='none';" />
+                        <p class="text-gray-700 mb-4">Adapting to climate change helps maintain productivity amid varying weather patterns.</p>
+                        <ul class="list-disc list-inside text-gray-700">
+                            <li>Select drought-tolerant crop varieties.</li>
+                            <li>Implement mulching to retain soil moisture.</li>
+                            <li>Build windbreaks to protect against extreme weather.</li>
+                            <li>Use precision farming tools for better resource management.</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </section>
+
+    <footer class="bg-gray-800 text-white py-6 px-4">
+        <div class="container mx-auto text-center">
+            <p>© 2023 CropYield Predictor. Empowering farmers worldwide.</p>
+            <div class="mt-4">
+                <label for="language" class="block text-sm mb-2">Select Language:</label>
+                <select id="language" class="px-3 py-1 bg-gray-700 text-white rounded" onchange="changeLanguage()">
+                    <option value="en">English</option>
+                    <option value="hi">Hindi (हिंदी)</option>
+                    <option value="es">Spanish</option>
+                </select>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        let historyData = [
+            { crop: 'Wheat', location: 'Punjab, India', date: new Date().toLocaleDateString(), yield: '3.8 tons/hectare', performance: 'Above average' },
+            { crop: 'Rice', location: 'Punjab, India', date: new Date(Date.now() - 30*24*60*60*1000).toLocaleDateString(), yield: '5.1 tons/hectare', performance: 'Excellent' },
+            { crop: 'Maize', location: 'Punjab, India', date: new Date(Date.now() - 60*24*60*60*1000).toLocaleDateString(), yield: '4.9 tons/hectare', performance: 'Good' }
+        ];
+
+        function updateDashboard() {
+            // Update scores (mock data)
+            document.getElementById('farmHealthScore').textContent = `${85 + Math.floor(Math.random() * 10)}%`;
+            document.getElementById('yieldTrends').textContent = 'Wheat: +' + (10 + Math.floor(Math.random() * 10)) + '% | Rice: +' + (5 + Math.floor(Math.random() * 10)) + '%';
+            document.getElementById('alertsReminders').textContent = '• Irrigate ' + ['wheat', 'rice', 'maize'][Math.floor(Math.random() * 3)] + ' fields in ' + (1 + Math.floor(Math.random() * 5)) + ' days';
+
+            // Populate history table
+            const tbody = document.getElementById('historyBody');
+            tbody.innerHTML = '';
+            historyData.forEach(entry => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td class="px-4 py-2 border-b">${entry.crop}</td>
+                    <td class="px-4 py-2 border-b">${entry.location}</td>
+                    <td class="px-4 py-2 border-b">${entry.date}</td>
+                    <td class="px-4 py-2 border-b">${entry.yield}</td>
+                    <td class="px-4 py-2 border-b">${entry.performance}</td>
+                `;
+                tbody.appendChild(row);
+            });
+        }
+
+        // Navigation
+        document.querySelectorAll('.nav-link').forEach(link => {
+            link.addEventListener('click', function() {
+                const sectionId = this.getAttribute('data-section');
+                document.querySelectorAll('.section').forEach(sec => sec.classList.add('hidden'));
+                document.getElementById(sectionId).classList.remove('hidden');
+                document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
+                this.classList.add('active');
+                if (sectionId === 'dashboard') {
+                    updateDashboard();
+                }
+            });
+        });
+
+        // Education Module Toggle
+        document.querySelectorAll('.module-toggle').forEach(toggle => {
+            toggle.addEventListener('click', function() {
+                const module = this.getAttribute('data-module');
+                const content = this.nextElementSibling;
+                const span = this.querySelector('span');
+                if (content.classList.contains('open')) {
+                    content.classList.remove('open');
+                    span.textContent = '▶';
+                } else {
+                    content.classList.add('open');
+                    span.textContent = '▼';
+                    content.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                }
+            });
+        });
+
+        document.getElementById('predictionForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            calculatePrediction();
+        });
+
+        document.getElementById('calculateBtn').addEventListener('click', calculatePrediction);
+
+        function calculatePrediction() {
+            const crop = document.getElementById('crop').value;
+            const location = document.getElementById('location').value.trim();
+            const soilPh = parseFloat(document.getElementById('soilPh').value);
+            const soilMoisture = parseFloat(document.getElementById('soilMoisture').value);
+            const temperature = parseFloat(document.getElementById('temperature').value);
+            const rainfall = parseFloat(document.getElementById('rainfall').value);
+
+            if (!crop || !location || isNaN(soilPh) || isNaN(soilMoisture) || isNaN(temperature) || isNaN(rainfall)) {
+                alert('Please fill all required fields.');
+                return;
+            }
+
+            // Show loading
+            document.getElementById('loading').classList.remove('hidden');
+
+            setTimeout(() => {
+                document.getElementById('loading').classList.add('hidden');
+
+                // Mock AI calculation
+                const baseYield = { wheat: 3.5, rice: 5.2, maize: 4.8, soybean: 2.1 };
+                let yieldAdjustment = 1;
+
+                if (soilPh >= 6 && soilPh <= 7.5) yieldAdjustment += 0.1;
+                if (soilMoisture > 40 && soilMoisture < 60) yieldAdjustment += 0.1;
+                if (temperature >= 20 && temperature <= 30) yieldAdjustment += 0.05;
+                if (rainfall > 100) yieldAdjustment += 0.1;
+
+                if (Math.random() > 0.5) yieldAdjustment += 0.1; // Random factor for variability
+
+                const predictedYield = (baseYield[crop] * yieldAdjustment).toFixed(1);
+                document.getElementById('predictedYield').innerHTML = `<strong>${predictedYield} tons/hectare</strong> for ${crop} in ${location}. This accounts for historical trends and current conditions.`;
+
+                // Tailored Recommendations
+                let recs = [];
+
+                // Irrigation recommendations
+                if (soilMoisture < 40) {
+                    recs.push('Increase irrigation frequency to maintain optimal soil moisture.');
+                } else if (soilMoisture > 70) {
+                    recs.push('Reduce irrigation to prevent waterlogging and root diseases.');
+                } else {
+                    recs.push('Maintain current irrigation schedule.');
+                }
+
+                // Fertilization recommendations based on crop and soil pH
+                if (soilPh < 6) {
+                    recs.push('Apply lime to raise soil pH for better nutrient availability.');
+                } else if (soilPh > 7.5) {
+                    recs.push('Consider sulfur amendments to lower soil pH if needed.');
+                } else {
+                    recs.push('Soil pH is optimal; apply balanced NPK fertilizer as per crop needs.');
+                }
+
+                // Crop-specific fertilization tips
+                switch (crop) {
+                    case 'wheat':
+                        recs.push('Use nitrogen-rich fertilizers during tillering and booting stages.');
+                        break;
+                    case 'rice':
+                        recs.push('Apply phosphorus and potassium fertilizers before transplanting.');
+                        break;
+                    case 'maize':
+                        recs.push('Split nitrogen application: half at planting, half at knee-high stage.');
+                        break;
+                    case 'soybean':
+                        recs.push('Inoculate seeds with rhizobium bacteria to enhance nitrogen fixation.');
+                        break;
+                }
+
+                // Pest control recommendations based on temperature and rainfall
+                if (temperature > 30 && rainfall > 100) {
+                    recs.push('High temperature and humidity increase pest risk; monitor regularly and use integrated pest management.');
+                } else if (temperature > 30) {
+                    recs.push('High temperature may stress crops; scout for heat-related pests and diseases.');
+                } else {
+                    recs.push('Maintain regular pest monitoring and use organic pest control methods.');
+                }
+
+                // General pest control advice
+                recs.push('Use pest-resistant crop varieties where available.');
+                recs.push('Avoid excessive pesticide use to maintain beneficial insect populations.');
+
+                // Save to history
+                historyData.unshift({ crop, location, date: new Date().toLocaleDateString(), yield: predictedYield + ' tons/hectare', performance: yieldAdjustment > 1.1 ? 'Above average' : 'Average' });
+                if (historyData.length > 5) historyData.pop();
+
+                // Display recommendations
+                const recList = recs.map(r => `<li>${r}</li>`).join('');
+                document.getElementById('recommendations').innerHTML = recList;
+
+                // Show results
+                document.getElementById('results-section').classList.remove('hidden');
+                document.getElementById('results-section').scrollIntoView({ behavior: 'smooth' });
+            }, 2000); // Simulate AI processing time
+        }
+
+        function changeLanguage() {
+            const lang = document.getElementById('language').value;
+            const translations = {
+                en: {
+                    title: 'CropYield Predictor',
+                    subtitle: 'Harness AI for accurate crop yield predictions...',
+                },
+                hi: {
+                    title: 'फसल उत्पादन भविष्यवक्ता',
+                    subtitle: 'सटीक फसल उत्पादन भविष्यवाणी के लिए एआई का लाभ उठाएं...',
+                },
+                es: {
+                    title: 'Predictor de Rendimiento de Cultivos',
+                    subtitle: 'Aprovecha la IA para predicciones precisas de rendimiento de cultivos...',
+                }
+            };
+
+            document.title = translations[lang].title;
+            document.querySelector('.hero h1').textContent = translations[lang].title;
+            document.querySelector('.hero p').textContent = translations[lang].subtitle;
+            // Add more translations as needed
+        }
+    </script>
+</body>
+</html>
+</content>
+</create_file>
